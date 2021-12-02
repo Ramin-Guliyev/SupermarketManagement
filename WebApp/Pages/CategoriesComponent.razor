@@ -19,6 +19,7 @@
                     <td>@category.Description</td>
                     <td>
                         <button type="button" @onclick="@(() => EditCategory(category))" class="btn btn-link">Edit</button>
+                        <button type="button" @onclick="@(() => DeleteCategory(category.CategoryId))" class="btn btn-link">Delete</button>
                     </td>
                 </tr>
 
@@ -37,11 +38,13 @@
     [Inject]
     UseCases.UseCaseInterfaces.IViewCategoriesUseCase ViewCategoriesUseCase { get; set; }
     [Inject]
+    UseCases.UseCaseInterfaces.IDeleteCategoryUseCase DeleteCategoryUseCase { get; set; }
+    [Inject]
     NavigationManager NavigationManager { get; set; }
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        categories = ViewCategoriesUseCase.Execute()?.ToList();
+        LoadCategories();
     }
 
     private void OnClickAddCategory()
@@ -52,5 +55,14 @@
     private void EditCategory(Category category)
     {
         NavigationManager.NavigateTo($"/editcategory/{category.CategoryId}");
+    }
+    private void DeleteCategory(int categoryId)
+    {
+        DeleteCategoryUseCase.Delete(categoryId);
+        LoadCategories();
+    }
+    private void LoadCategories()
+    {
+        categories = ViewCategoriesUseCase.Execute()?.ToList();
     }
 }
