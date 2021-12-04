@@ -61,8 +61,5 @@
         DeleteCategoryUseCase.Delete(categoryId);
         LoadCategories();
     }
-    private void LoadCategories()
-    {
-        categories = ViewCategoriesUseCase.Execute()?.ToList();
-    }
+    private void LoadCategories() => categories = ViewCategoriesUseCase.Execute()?.ToList();
 }

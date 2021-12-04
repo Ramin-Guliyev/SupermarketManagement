@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UseCases;
 using UseCases.DataStorePlaginInterfaces;
+using UseCases.ProductUseCases;
 using UseCases.UseCaseInterfaces;
 using WebApp.Data;
 
@@ -40,7 +41,11 @@ namespace WebApp
             services.AddTransient<IEditCategoryUseCase, EditCategoryUseCase>();
             services.AddTransient<IGetCategoryByIdUseCase, GetCategoryByIdUseCase>();
             services.AddTransient<IDeleteCategoryUseCase, DeleteCategoryUseCase>();
+            services.AddTransient<IViewProductsUseCase, ViewProductsUseCase>();
+            services.AddTransient<IAddProductUseCase, AddProductUseCase>();
+
             services.AddScoped<ICategoryRepository, CategoryInMemoryRepository>();
+            services.AddScoped<IProductRepository, ProductInMemoryRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
