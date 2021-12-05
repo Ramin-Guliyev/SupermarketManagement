@@ -1,0 +1,85 @@
+﻿@using UseCases.ProductUseCases
+@if (productToSell is not null)
+{
+    <EditForm Model="productToSell" OnValidSubmit="SellProduct">
+
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @errorMessage
+            </div>
+        }
+        <br/>
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary ></ValidationSummary>
+        <div class="form-group">
+            <label for="name">Product Name</label>
+            <input class="form-control" id="name" type="text" readonly value="@productToSell.Name"/>
+        </div>
+        <div class="form-group">
+            <label for="price">Product Name</label>
+            <input class="form-control" id="price" type="text" readonly value="@(string.Format("{0:c}", productToSell.Price))"/>
+        </div>
+        <div class="form-group">
+            <label for="qyt">Quentity</label>
+            <InputNumber id="qyt" class="form-control" @bind-Value="@productToSell.Quantity"/>
+        </div>
+        <button type="submit" class="btn btn-primary"> Sell</button>
+    </EditForm>
+}
+
+
+@code {
+
+    private string errorMessage = null;
+
+    [Parameter]
+    public Product SelectedProduct { get; set; }
+
+    [Parameter]
+    public EventCallback<Product> OnProductSold { get; set; }
+
+    private Product productToSell;
+
+    [Inject]
+    public IGetProductByIdUseCase GetProductByIdUseCase { get; set; }
+    [Inject]
+    public ISellProductUseCase SellProductUseCase { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (SelectedProduct is not null)
+        {
+            productToSell = new Product()
+            {
+                Name = SelectedProduct.Name,
+                Quantity = 0,
+                Price = SelectedProduct.Price,
+                CategoryId = SelectedProduct.CategoryId,
+                ProductId = SelectedProduct.ProductId
+            };
+        }
+        else
+        {
+            productToSell = null;
+        }
+    }
+
+    private void SellProduct()
+    {
+        var product = GetProductByIdUseCase.Execute(productToSell.ProductId);
+        if (product.Quantity >= productToSell.Quantity)
+        {
+            SellProductUseCase.Execute(productToSell.ProductId, productToSell.Quantity.Value);
+            errorMessage= null;
+            OnProductSold.InvokeAsync(product);
+        }
+        else
+        {
+            errorMessage = "Not enough product";
+        }
+        OnProductSold.InvokeAsync(productToSell);
+    }
+
+}

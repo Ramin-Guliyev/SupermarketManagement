@@ -1,0 +1,70 @@
+﻿<div class="form-group">
+    <label for="category">Category</label>
+    <select class="form-control" id="category" @bind=SelectCategoryId>
+        <option selected></option>
+        @foreach (var cat in categories)
+        {
+            <option value="@cat.CategoryId">@cat.Name</option>
+        }
+    </select>
+</div>
+@if (productsInCategory is not null)
+{
+    <table class="table">
+        <thead>
+        <th>Prod Name</th>
+        <th>Qty Left</th>
+        </thead>
+        <tbody>
+        @foreach (var prod in productsInCategory)
+        {
+            <tr @onclick="(() => OnSelectProduct(prod))" style="cursor: pointer">
+                <td>@prod.Name</td>
+                <td>@prod.Quantity</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private int selectCategoryId;
+    private int selectedProductId;
+    [Parameter]
+    public EventCallback<Product>OnProductSelected{get;set;}
+
+    public int SelectCategoryId
+    {
+        get { return selectCategoryId; }
+        set
+        {
+            selectCategoryId = value;
+            productsInCategory = ViewProductsByCategoryId.Execute(value);
+            OnSelectProduct(null);
+        }
+    }
+
+    private IEnumerable<Product> productsInCategory;
+    private IEnumerable<Category> categories;
+
+    [Inject]
+    IViewCategoriesUseCase ViewCategoriesUseCase { get; set; }
+
+    [Inject]
+    IViewProductsByCategoryId ViewProductsByCategoryId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        categories = ViewCategoriesUseCase.Execute();
+    }
+
+    private void OnSelectProduct(Product product)
+    {
+        OnProductSelected.InvokeAsync(product);
+        if(product is not null)
+            selectedProductId = product.ProductId;
+    }
+
+}
