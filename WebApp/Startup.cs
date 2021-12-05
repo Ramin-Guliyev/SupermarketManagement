@@ -45,6 +45,7 @@ namespace WebApp
             services.AddTransient<IAddProductUseCase, AddProductUseCase>();
             services.AddTransient<IEditProductUseCase, EditProductUseCase>();
             services.AddTransient<IGetProductByIdUseCase, GetProductByIdUseCase>();
+            services.AddTransient<IDeleteProductUseCase, DeleteProductUseCase>();
 
             services.AddScoped<ICategoryRepository, CategoryInMemoryRepository>();
             services.AddScoped<IProductRepository, ProductInMemoryRepository>();

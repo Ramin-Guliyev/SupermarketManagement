@@ -21,7 +21,11 @@
                     <td>@product.Name</td>
                     <td>@(Math.Round(product.Price.Value,2))</td>
                     <td>@product.Quantity</td>
-                    <td><button type="button" class="btn btn-link" @onclick="@(()=>EditProduct(product))">Update</button></td>
+                    <td>
+                        <button type="button" class="btn btn-link" @onclick="@(() => EditProduct(product))">Update</button>
+                        &nbsp;
+                        <button type="button" class="btn btn-danger" @onclick="@(() => DeleteProduct(product.ProductId))">Delete</button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -37,6 +41,8 @@
     public IGetCategoryByIdUseCase GetCategoryByIdUseCase { get; set; }
     [Inject]
     NavigationManager NavigationManager { get; set; }
+    [Inject]
+    IDeleteProductUseCase DeleteProductUseCase { get; set; }
     private IEnumerable<Product> products;
     protected override void OnInitialized()
     {
@@ -48,6 +54,12 @@
     private void EditProduct(Product product)
     {
         NavigationManager.NavigateTo($"/editproduct/{product.ProductId}");
+    }
+
+    private void DeleteProduct(int productProductId)
+    {
+        DeleteProductUseCase.Execute(productProductId);
+          products = ViewProductsUseCase.Execute();
     }
 
 }
