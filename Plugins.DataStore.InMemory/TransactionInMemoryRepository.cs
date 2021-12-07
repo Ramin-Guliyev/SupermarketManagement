@@ -25,10 +25,19 @@ namespace Plugins.DataStore.InMemory
 
         public IEnumerable<Transaction> GetByDay(string cashierName,DateTime date)
         {
-
             if (string.IsNullOrWhiteSpace(cashierName))
                 return transactions.Where(x=>x.TimeStamp.Date==date.Date);
             return transactions.Where(x => x.TimeStamp.Date == date.Date && string.Equals(x.CashierName, cashierName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public IEnumerable<Transaction> Search(string cashierName, DateTime startDate, DateTime endDate)
+        {
+            if (string.IsNullOrWhiteSpace(cashierName))
+                return transactions.Where(x=>x.TimeStamp>=startDate.Date && x.TimeStamp <= endDate.Date.AddDays(1).Date);
+            
+            return transactions.Where(x => 
+                x.TimeStamp.Date  >= startDate.Date && x.TimeStamp <= endDate.Date.AddDays(1).Date &&
+                string.Equals(x.CashierName, cashierName, StringComparison.OrdinalIgnoreCase));
         }
 
         public void Save(string cashierName,int productId,string productName ,double price,int beforeQyt, int qyt)

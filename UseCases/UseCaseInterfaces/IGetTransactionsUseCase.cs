@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using CoreBusiness;
 
-namespace UseCases
+namespace UseCases.UseCaseInterfaces
 {
     public interface IGetTransactionsUseCase
     {
