@@ -1,4 +1,5 @@
 ﻿@page "/editproduct/{productId}"
+@attribute [Authorize(Policy ="AdminOnly")]
 <h3>Edit Product </h3>
 
 @if (product != null)

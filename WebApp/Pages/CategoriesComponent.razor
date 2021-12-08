@@ -1,4 +1,5 @@
 ﻿@page "/categories"
+@attribute [Authorize(Policy ="AdminOnly")]
 <h3>Manage Categories</h3>
 
 @if (categories is not null)

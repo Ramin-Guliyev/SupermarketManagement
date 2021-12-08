@@ -1,4 +1,5 @@
 ﻿@page "/editcategory/{categoryId}"
+@attribute [Authorize(Policy ="AdminOnly")]
 <h3>Edit Category </h3>
 
 @if (category != null)

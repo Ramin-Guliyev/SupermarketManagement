@@ -40,6 +40,12 @@ namespace WebApp
             services.AddDbContext<MarketDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("AdminOnly", p => p.RequireClaim("Position", "Admin"));
+                opt.AddPolicy("CashierOnly", p => p.RequireClaim("Position", "Cashier"));
+            });
+
             services.AddTransient<IViewCategoriesUseCase, ViewCategoriesUseCase>();
             services.AddTransient<IAddCategoryUseCase, AddCategoryUseCase>();
             services.AddTransient<IEditCategoryUseCase, EditCategoryUseCase>();
@@ -85,9 +91,12 @@ namespace WebApp
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });

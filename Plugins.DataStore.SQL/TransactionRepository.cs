@@ -1,4 +1,5 @@
 ﻿using CoreBusiness;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,13 +27,15 @@ namespace Plugins.DataStore.SQL
         {
             if (string.IsNullOrWhiteSpace(cashierName))
                 return marketDbContext.Transactions.Where(x => x.TimeStamp.Date == date.Date);
-            return marketDbContext.Transactions.Where(x => x.TimeStamp.Date == date.Date && string.Equals(x.CashierName, cashierName, StringComparison.OrdinalIgnoreCase));
-
+            else
+                return marketDbContext.Transactions.Where(x =>
+                    EF.Functions.Like(x.CashierName, $"%{cashierName}%") &&
+                    x.TimeStamp.Date == date.Date);
         }
 
         public void Save(string cashierName, int productId, string productName, double price, int beforeQyt, int qyt)
         {
-          
+
             marketDbContext.Transactions.Add(new Transaction
             {
                 ProductId = productId,

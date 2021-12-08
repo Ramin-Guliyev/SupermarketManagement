@@ -1,26 +1,40 @@
 ﻿@page "/cashier"
-<h3>Cashier`s Console</h3>
-<br />
-<div class="form-group">
-    <label for="cashier">Cashier Name :</label>
-    <input type="text" id="cashier" @bind-value="cashierName" class="form-control"/>
-</div>
-<div class="row">
-    <div class="col-4">
-        <SelectProductForSellingComponent OnProductSelected="SelectProduct"></SelectProductForSellingComponent>
-        <SellProductComponent CashierName="@cashierName" SelectedProduct="selectedProduct" OnProductSold="SellProduct"></SellProductComponent>
+@attribute [Authorize(Policy = "CashierOnly")]
+@if (!string.IsNullOrWhiteSpace(cashierName))
+{
+    <h3>Cashier`s Console</h3>
+    <br />
+    <div class="form-group">
+        <label for="cashier">Cashier Name :</label>
+        <input type="text" id="cashier" @bind-value="cashierName" class="form-control" />
     </div>
-    <div class="col">
-<TodayTransactionsComponent @ref="transactionComponent"></TodayTransactionsComponent>
-    </div>
-</div>
 
 
+    <div class="row">
+        <div class="col-4">
+            <SelectProductForSellingComponent OnProductSelected="SelectProduct"></SelectProductForSellingComponent>
+            <SellProductComponent CashierName="@cashierName" SelectedProduct="selectedProduct" OnProductSold="SellProduct"></SellProductComponent>
+        </div>
+        <div class="col">
+            <TodayTransactionsComponent @ref="transactionComponent"></TodayTransactionsComponent>
+        </div>
+    </div>
+
+}
 @code {
 
     private TodayTransactionsComponent transactionComponent;
     private Product selectedProduct;
     private string cashierName;
+    [CascadingParameter]
+    private Task<AuthenticationState> _authState{ get; set; }
+    private AuthenticationState authState;
+
+    protected override async Task OnInitializedAsync()
+    {
+        authState = await _authState;
+        cashierName = authState.User.Identity.Name;
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {
